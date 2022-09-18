@@ -29,6 +29,8 @@ function App() {
             <Route path="/" element={<Home/>}/>
             <Route path="/rules" element={<Rules/>} />
             <Route path="/chat" element={<Chat socket={socket} room={room} />} />
+            <Route path="/create" />
+            <Route path="/join" />
             <Route path="/leaderboard" />
             <Route path="/history" />
             <Route path="/game" />
