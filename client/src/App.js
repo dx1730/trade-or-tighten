@@ -10,6 +10,8 @@ import Nav from "./components/Nav";
 import Home from "./components/Home";
 import Chat from "./components/Chat";
 import Rules from "./components/Rules";
+import Create from "./components/Create";
+import Join from "./components/Join";
 
 import io from "socket.io-client";
 import { useState } from "react";
@@ -29,11 +31,11 @@ function App() {
             <Route path="/" element={<Home/>}/>
             <Route path="/rules" element={<Rules/>} />
             <Route path="/chat" element={<Chat socket={socket} room={room} />} />
-            <Route path="/create" />
-            <Route path="/join" />
+            <Route path="/create" element={<Create/>} />
+            <Route path="/join" element={<Join/>} />
+            <Route path="/game" />
             <Route path="/leaderboard" />
             <Route path="/history" />
-            <Route path="/game" />
             </Routes>
           </div>
         </div>
