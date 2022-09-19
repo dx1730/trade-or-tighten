@@ -14,14 +14,7 @@ import Create from "./components/Create";
 import Join from "./components/Join";
 import WhatIsThis from "./components/WhatIsThis";
 
-import io from "socket.io-client";
-import { useState } from "react";
-
-const socket = io("http://localhost:8000");
-
 function App() {
-  const [room, setRoom] = useState("");
-
   return (
     <div className="App">
       <Router>
@@ -32,7 +25,7 @@ function App() {
             <Route path="/" element={<Home/>}/>
             <Route path="/rules" element={<Rules/>} />
             <Route path="/whatisthis" element={<WhatIsThis/>} />
-            <Route path="/chat" element={<Chat socket={socket} room={room} />} />
+            <Route path="/chat" element={<Chat/>} />
             <Route path="/create" element={<Create/>} />
             <Route path="/join" element={<Join/>} />
             <Route path="/game" />

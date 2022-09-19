@@ -1,55 +1,95 @@
-import React, { Component } from 'react';
-import io from "socket.io-client";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
 
-const url = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
+// const url = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
 
-export default class Join extends Component {
-  constructor(props) {
-    super(props)
+function Error({ errorMessage }) {
+  return (
+    <div className="text-left text-sm mt-2 font-light text-red" disabled={true}>
+      &#9888; Error: {errorMessage}
+    </div>
+  )
+}
 
-    this.state = {
-      username: '',
-      room: '',
-      players: [],
-      socket: null
+function Join() {
+  const [username, setUsername] = useState('');
+  const [room, setRoom] = useState('');
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  let navigate = useNavigate();
+  
+  const attemptJoin = () => {
+    if (username === "") {
+      setError(true);
+      setErrorMessage("Please enter a username.");
+      return
     }
+
+    if (room === "") {
+      setError(true);
+      setErrorMessage("Please enter a room code.");
+      return
+    }
+
+    // const socket = io('http://localhost:8000');
+    // socket.emit("join", room)
+    navigate("/chat", {state: {room: room, username: username}});
   }
 
-  setName = (name) => {
-    this.setState({username : name});
-  }
-
-  setRoom = (room) => {
-    this.setState({room: room});
-  }
-
-
-
-  render() {
-    return (
-      <section class="bg-indigo-100 h-full">
-      <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto h-full lg:py-0">
-        <div class="w-3/4 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
-          <div class="p-8 space-y-6 md:space-y-6">
-            <h1 class="text-2xl font-bold leading-tight tracking-tight text-gray-800">
+  return (
+    <section className="bg-indigo-100 h-full">
+      <div className="pt-4 mx-auto max-w-7xl px-8 sm:pt-16 text-center flex-initial md:pt-16 xl:pt-48">
+        <div className="mx-auto w-3/4 bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
+          <div className="p-8">
+            <h1 className="text-2xl font-bold leading-tight tracking-tight text-gray-800">
               Join Game
             </h1>
-            <div class="space-y-6" action="#">
+            <div className="mt-6 space-y-6">
               <div>
-                <label for="username" class="text-left block mb-2 text-sm font-medium text-gray-800">Username</label>
-                <input class="bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5" placeholder="Username" required=""/>
+                <label htmlFor="username" className="text-left block mb-2 text-sm font-medium text-gray-800">Username</label>
+                <input
+                  type="text"
+                  className="bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5" 
+                  placeholder="Username" 
+                  value={username}
+                  onChange={(event) => {setUsername(event.target.value)}}
+                  onKeyPress={(event) => {event.key === "Enter" && attemptJoin();}}
+                />
               </div>
               <div>
-                <label for="room-code" class="text-left block mb-2 text-sm font-medium text-gray-800">Room Code</label>
-                <input placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5" required=""/>
+                <label htmlFor="room" className="text-left block mb-2 text-sm font-medium text-gray-800">Room Code</label>
+                <input 
+                  placeholder="••••••••" 
+                  className="bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5" 
+                  value={room}
+                  onChange={(event) => {setRoom(event.target.value)}}
+                  onKeyPress={(event) => {event.key === "Enter" && attemptJoin();}}
+                />
               </div>
-              <button class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg px-5 py-2.5 text-center">Join</button>
-              <button class="text-gray-700 text-sm hover:underline hover:text-gray-800">Back</button>
+            </div>
+            { error ? <Error errorMessage={errorMessage}/> : null }
+            <button
+              className="w-full mt-6 text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus-outline-none focus:ring-indigo-300 font-medium rounded-lg px-5 py-2.5 text-center"
+              onClick={attemptJoin}
+              >
+              Join
+            </button>
+            <div className="mt-5">
+              <Link to="/">
+                <button 
+                  className="text-gray-700 text-sm hover:underline hover:text-gray-800"
+                  >
+                  Back
+                </button>
+              </Link>
             </div>
           </div>
         </div>
       </div>
-      </section>
-    );
-  }
+    </section>
+  );
 }
+
+export default Join;

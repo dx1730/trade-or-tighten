@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
-function Chat({ socket, username, room }) {
+import { useLocation } from 'react-router-dom';
+
+function Chat() {
     const [currentMessage, setCurrentMessage] = useState("");
     const [messageList, setMessageList] = useState([]);
+
+    const location = useLocation();
+    console.log(location);
+
+    let username = location.state.username;
+    let room = location.state.room;
 
     const sendMessage = async () => {
         if (currentMessage !== "") {
             const date = new Date(Date.now());
             const messageData = {
                 room: room,
-                author: "You",
+                author: username,
                 message: currentMessage,
                 time: date.getHours() + ":" + (date.getMinutes()<10 ? '0' : '') + date.getMinutes()
             };
