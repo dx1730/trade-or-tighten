@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import io from 'socket.io-client';
-
-// const url = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000'
+import SocketContext from '../contexts/SocketContext';
 
 function Error({ errorMessage }) {
   return (
@@ -13,6 +11,8 @@ function Error({ errorMessage }) {
 }
 
 function Join() {
+  const { socket } = useContext(SocketContext);
+
   const [username, setUsername] = useState('');
   const [room, setRoom] = useState('');
   const [error, setError] = useState(false);
@@ -33,8 +33,7 @@ function Join() {
       return
     }
 
-    // const socket = io('http://localhost:8000');
-    // socket.emit("join", room)
+    socket.emit("join", room)
     navigate("/chat", {state: {room: room, username: username}});
   }
 

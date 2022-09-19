@@ -6,6 +6,8 @@ import {
   Route,
 } from "react-router-dom";
 
+import { SocketProvider } from "./contexts/SocketContext";
+
 import Nav from "./components/Nav";
 import Home from "./components/Home";
 import Chat from "./components/Chat";
@@ -17,24 +19,26 @@ import WhatIsThis from "./components/WhatIsThis";
 function App() {
   return (
     <div className="App">
-      <Router>
-        <div className="flex flex-col h-screen">
-          <Nav/>
-          <div className="flex-auto">
-            <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/rules" element={<Rules/>} />
-            <Route path="/whatisthis" element={<WhatIsThis/>} />
-            <Route path="/chat" element={<Chat/>} />
-            <Route path="/create" element={<Create/>} />
-            <Route path="/join" element={<Join/>} />
-            <Route path="/game" />
-            <Route path="/leaderboard" />
-            <Route path="/history" />
-            </Routes>
+      <SocketProvider>
+        <Router>
+          <div className="flex flex-col h-screen">
+            <Nav/>
+            <div className="flex-auto">
+              <Routes>
+              <Route path="/" element={<Home/>}/>
+              <Route path="/rules" element={<Rules/>} />
+              <Route path="/whatisthis" element={<WhatIsThis/>} />
+              <Route path="/chat" element={<Chat/>} />
+              <Route path="/create" element={<Create/>} />
+              <Route path="/join" element={<Join/>} />
+              <Route path="/game" />
+              <Route path="/leaderboard" />
+              <Route path="/history" />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
+      </SocketProvider>
     </div>
   )
 }
