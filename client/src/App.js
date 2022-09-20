@@ -15,6 +15,7 @@ import Rules from "./components/Rules";
 import Create from "./components/Create";
 import Join from "./components/Join";
 import WhatIsThis from "./components/WhatIsThis";
+import Game from "./components/game/Game";
 
 function App() {
   return (
@@ -31,7 +32,7 @@ function App() {
               <Route path="/chat" element={<Chat/>} />
               <Route path="/create" element={<Create/>} />
               <Route path="/join" element={<Join/>} />
-              <Route path="/game" />
+              <Route path="/game" element={<Game/>}/>
               <Route path="/leaderboard" />
               <Route path="/history" />
               </Routes>

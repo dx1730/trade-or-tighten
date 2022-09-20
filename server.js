@@ -1,19 +1,11 @@
 const express = require('express');
-const app = express();
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require("cors");
 const path = require('path')
 
+const app = express();
 app.use(cors());
-
-// Serve static files from the React frontend app
-app.use(express.static(path.join(__dirname, 'client/build')))
-
-// Anything that doesn't match the above, send back index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/build/index.html'))
-})
 
 const PORT = process.env.PORT || 8000;
 const server = http.createServer(app);
@@ -24,6 +16,34 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     },
 });
+
+let rooms = {};
+
+app.get("/createGame", (req, res) => {
+    let newRoom = "";
+
+    while (newRoom === "" || (newRoom in rooms)) {
+        newRoom = Math.floor(Math.random() * 1000).toString();
+    }
+
+    rooms[newRoom] = null;
+    console.log(`New room with code ${newRoom} created.`)
+    res.json({room: newRoom});
+})
+
+app.get(`/exists/:room`, (req, res) => {
+    const room = req.params.room;
+    res.json({exists: (room in rooms)});
+})
+
+function createSocket(roomSocket, room) {
+    let players = [];
+
+    roomSocket.on('connection', (socket) => {
+        console.log(`User ${socket.id} connected to room ${room}`);
+
+    })
+}
 
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
@@ -38,6 +58,14 @@ io.on("connection", (socket) => {
     })
 
     socket.on('disconnect', () => console.log(`User Disconnected: ${socket.id}`));
+})
+
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, 'client/build')))
+
+// Anything that doesn't match the above, send back index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/client/build/index.html'))
 })
 
 server.listen(PORT, () => {
