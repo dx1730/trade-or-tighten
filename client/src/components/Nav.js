@@ -23,7 +23,7 @@ function CustomLink({ item }) {
       className={classNames(
         current
           ? 'bg-indigo-600 text-blue-100'
-          : 'text-blue-900 hover:bg-indigo-600 hover:text-blue-100',
+          : 'text-indigo-600 hover:bg-indigo-600 hover:text-blue-100',
         'px-3 py-2 rounded-md text-sm font-medium'
       )}
       aria-current={current ? 'page' : undefined}
@@ -55,6 +55,11 @@ export default function Nav() {
                         <CustomLink item={item}/>
                       ))}
                     </div>
+                  </div>
+                </div>
+                <div className="hidden md:block">
+                  <div className="ml-10 flex items-baseline space-x-4">
+                    <span className="text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Username</span>
                   </div>
                 </div>
                 <div className="-mr-2 flex md:hidden">
