@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Tab } from '@headlessui/react';
+import OrderForm from "./OrderForm";
+import SocketContext from '../../contexts/SocketContext';
+import { useLocation } from 'react-router-dom';
 
 function Actions() {
   return (
@@ -100,14 +103,23 @@ function Action2() {
 }
 
 function Game() {
+  const { socket } = useContext(SocketContext);
+  const location = useLocation();
+
+  let username = location.state.username;
+  let room = location.state.room;
+
   return (
     <div className="h-full bg-indigo-100">
-      <h1 className="px-12 text-left text-xl tracking-tight font-semibold text-gray-700 sm:text-2xl md:text-3xl lg:text-4xl">
-        <span className="inline">Trading on&nbsp;</span>
-        <span className="text-indigo-600 inline">the sum of 10 cards</span>
-      </h1>
-      <Actions/>
-      <Action2/>
+      <div className="flex items-center justify-center pt-5 pb-5">
+        <h1 className="px-12 text-left text-xl tracking-tight font-semibold text-gray-700 sm:text-2xl md:text-3xl lg:text-4xl">
+          <span className="inline">Trading on&nbsp;</span>
+          <span className="text-indigo-600 inline">the sum of 10 cards</span>
+        </h1>
+      </div>
+      {/* <Actions/>
+      <Action2/> */}
+      <OrderForm username={username} room={room}/>
     </div>
   );
 }

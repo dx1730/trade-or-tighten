@@ -34,7 +34,8 @@ function Join() {
     }
 
     socket.emit("join", room)
-    navigate("/chat", {state: {room: room, username: username}});
+    // navigate("/chat", {state: {room: room, username: username}});
+    navigate("/game", {state: {room: room, username: username}});
   }
 
   return (
@@ -54,7 +55,7 @@ function Join() {
                   placeholder="Username" 
                   value={username}
                   onChange={(event) => {setUsername(event.target.value)}}
-                  onKeyPress={(event) => {event.key === "Enter" && attemptJoin();}}
+                  keyDown={(event) => {event.key === "Enter" && attemptJoin();}}
                 />
               </div>
               <div>
@@ -64,7 +65,7 @@ function Join() {
                   className="bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5" 
                   value={room}
                   onChange={(event) => {setRoom(event.target.value)}}
-                  onKeyPress={(event) => {event.key === "Enter" && attemptJoin();}}
+                  keyDown={(event) => {event.key === "Enter" && attemptJoin();}}
                 />
               </div>
             </div>
