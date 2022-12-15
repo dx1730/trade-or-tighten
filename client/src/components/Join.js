@@ -62,6 +62,7 @@ function Join() {
                 <label htmlFor="room" className="text-left block mb-2 text-sm font-medium text-gray-800">Room Code</label>
                 <input 
                   placeholder="••••••••" 
+                  type="text"
                   className="bg-gray-50 border border-gray-300 text-gray-800 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5" 
                   value={room}
                   onChange={(event) => {setRoom(event.target.value)}}
