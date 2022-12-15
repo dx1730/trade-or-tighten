@@ -1,3 +1,6 @@
+const OrderBook = require("./server/OrderBook");
+var { Limit, Order, OrderBookEntry } = require("./server/OrderBookEntry");
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -18,6 +21,8 @@ const io = new Server(server, {
 });
 
 let rooms = {};
+let orderBooks = {};
+let orderIds = {};
 
 app.get("/createGame", (req, res) => {
     let newRoom = "";
@@ -50,6 +55,8 @@ io.on("connection", (socket) => {
 
     socket.on("join", (room) => {
         socket.join(room);
+        orderBooks[room] = new OrderBook();
+        orderIds[room] = 1;
         console.log(`User with ID: ${socket.id} joined room: ${room}`)
     })
 
@@ -58,7 +65,11 @@ io.on("connection", (socket) => {
     })
 
     socket.on("send_order", (data) => {
-        console.log(`[${data.room}] ${data}`);
+        let room = data.room;
+        console.log(`[${room}] ${data}`);
+        orderBooks[room].addOrder(new Order(orderIds[room], data.username, data.isBuySide, data.price, data.quantity));
+        console.log(orderBooks[room].toString());
+        orderIds[room]++;
     })
 
     socket.on('disconnect', () => console.log(`User Disconnected: ${socket.id}`));
