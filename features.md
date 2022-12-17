@@ -11,6 +11,8 @@ Individual Level
 Group Level
 * Record of all trades
 * Leaderboard of top teams
+* Start Game Feature
+* Reset all trades
 
 Other Features
 * Party Creation

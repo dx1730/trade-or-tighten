@@ -53,9 +53,16 @@ function createSocket(roomSocket, room) {
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
+    socket.on("ping", () => {
+        io.emit('pong');
+    })
+
     socket.on("join", (room) => {
         socket.join(room);
-        orderBooks[room] = new OrderBook();
+        if (!([room] in orderBooks)) {
+            orderBooks[room] = new OrderBook(io, room);
+            console.log(`Created order book for room ${room}`);
+        }
         orderIds[room] = 1;
         console.log(`User with ID: ${socket.id} joined room: ${room}`)
     })
@@ -66,10 +73,11 @@ io.on("connection", (socket) => {
 
     socket.on("send_order", (data) => {
         let room = data.room;
-        console.log(`[${room}] ${data}`);
-        orderBooks[room].addOrder(new Order(orderIds[room], data.username, data.isBuySide, data.price, data.quantity));
+        orderBookChange = orderBooks[room].addOrder(new Order(orderIds[room], data.username, data.isBuySide, data.price, data.quantity), socket);
         console.log(orderBooks[room].toString());
         orderIds[room]++;
+        console.log("Sending order book change to clients...");
+        // io.in(room).emit("order_book_change", orderBookChange);
     })
 
     socket.on('disconnect', () => console.log(`User Disconnected: ${socket.id}`));

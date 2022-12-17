@@ -26,10 +26,12 @@ function askLimitComparer(x, y) {
 }
 
 class OrderBook {
-    constructor() {
+    constructor(io, room) {
         this.bidLimits = new SortedSet([], (x, y) => x.price == y.price, bidLimitComparer);
         this.askLimits = new SortedSet([], (x, y) => x.price == y.price, askLimitComparer);
         this.orders = {};
+        this.io = io;
+        this.room = room;
     }
     
     get count() {
@@ -40,11 +42,32 @@ class OrderBook {
         return (orderId in this.orders);
     }
 
+    sendLevelChanges(isBuySide, limitChanged) {
+        const levelChanged = {
+            isBuySide: isBuySide,
+            price: limitChanged.price,
+            volume: limitChanged.getLevelQuantity(),
+        };
+        this.io.in(this.room).emit("level_change", levelChanged);
+    }
+
+    sendTradeChange(tradePrice) {
+        this.io.in(this.room).emit("trade_change", tradePrice);
+    }
+
+    sendSpreadChange() {
+        this.io.in(this.room).emit("spread_change", this.getSpread());
+    }
+
     addOrder(order) {
         const baseLimit = new Limit(order.price);
-        this.addOrderToBook(order, baseLimit, 
+        const limitChanged = this.addOrderToBook(order, baseLimit, 
             order.isBuySide ? this.bidLimits : this.askLimits, this.orders);
-        this.match();
+        const tradeMatched = this.match(order.isBuySide);
+        if (!tradeMatched) {
+            this.sendLevelChanges(order.isBuySide, limitChanged);
+            this.sendSpreadChange();
+        }
     }
 
     addOrderToBook(order, baseLimit, limitLevels, internalBook) {
@@ -61,6 +84,7 @@ class OrderBook {
                 limit.tail = orderBookEntry;
             }
             internalBook[order.orderId] = orderBookEntry;
+            return limit;
         } else {
             limitLevels.add(baseLimit);
             const orderBookEntry = new OrderBookEntry(order, baseLimit);
@@ -68,6 +92,7 @@ class OrderBook {
             baseLimit.tail = orderBookEntry;
             // console.log(orderBookEntry);
             internalBook[order.orderId] = orderBookEntry;
+            return baseLimit;
         }
     }
 
@@ -120,7 +145,9 @@ class OrderBook {
         return (bestAsk == null || bestBid == null) ? null : bestAsk - bestBid;
     }
 
-    match() {
+    // maximum call stack exceeded with market orders?
+
+    match(isBuySide) {
         let bestAsk = null;
         let bestBid = null;
         if (this.askLimits.length > 0) {
@@ -142,17 +169,27 @@ class OrderBook {
                 askOrder.decreaseQuantity(quantity);
                 bidOrder.decreaseQuantity(quantity);
 
+                this.sendLevelChanges(false, bestAsk);
+                this.sendLevelChanges(true, bestBid);
+                console.log(`isBuySide: ${isBuySide} askOrder.price: ${askOrder.price} bidOrder.price: ${bidOrder.price}`);
+                this.sendTradeChange(isBuySide ? askOrder.price : bidOrder.price);
+
                 if (askOrder.currentQuantity == 0) {
                     this.removeOrder(askOrder);
                 }
                 if (bidOrder.currentQuantity == 0) {
                     this.removeOrder(bidOrder);
                 }
+
+                this.sendSpreadChange();
+
                 if (bidOrder.currentQuantity > 0 || askOrder.currentQuantity > 0) {
-                    this.match();
+                    this.match(isBuySide);
                 }
+                return true;
             }
         }
+        return false;
     }
 
     toString() {

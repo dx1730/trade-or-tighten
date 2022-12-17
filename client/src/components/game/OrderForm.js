@@ -55,7 +55,7 @@ function OrderForm(props) {
         return;
       }
   
-      if (isNaN(priceNum) || price === "" || priceNum < 0 || priceNum > 9999) {
+      if (!(orderType === false) && (isNaN(priceNum) || price === "" || priceNum < 0 || priceNum > 9999)) {
         setError(true);
         setErrorMessage("Please make sure your price is valid.");
         return;
@@ -81,10 +81,10 @@ function OrderForm(props) {
         room: props.room,
         username: props.username,
         isBuySide: isBuySide,
-        price: orderType ? Math.round((priceNum + Number.EPSILON) * 100) / 100 : 9999,
+        price: orderType ? Math.round((priceNum + Number.EPSILON) * 100) / 100 : (isBuySide ? 9999 : 0),
         quantity: Math.round(quantityNum) 
       }
-      console.log(orderData);
+      // console.log(orderData);
 
       await socket.emit("send_order", orderData);
     };

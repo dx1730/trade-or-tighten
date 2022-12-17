@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
 import { Tab } from '@headlessui/react';
 import OrderForm from "./OrderForm";
+import OrderBook from "./OrderBook";
 import SocketContext from '../../contexts/SocketContext';
 import { useLocation } from 'react-router-dom';
+import Test from './test';
 
 function Actions() {
   return (
@@ -111,15 +113,24 @@ function Game() {
 
   return (
     <div className="h-full bg-indigo-100">
-      <div className="flex items-center justify-center pt-5 pb-5">
-        <h1 className="px-12 text-left text-xl tracking-tight font-semibold text-gray-700 sm:text-2xl md:text-3xl lg:text-4xl">
+      <div className="flex items-center justify-center pt-2 pb-2">
+        <h1 className="px-12 text-left text-xl tracking-tight font-semibold text-gray-700 sm:text-xl md:text-2xl lg:text-3xl">
           <span className="inline">Trading on&nbsp;</span>
           <span className="text-indigo-600 inline">the sum of 10 cards</span>
+          <span className="text-sm">&nbsp; &nbsp; &nbsp; (room: {room})</span>
         </h1>
       </div>
       {/* <Actions/>
       <Action2/> */}
-      <OrderForm username={username} room={room}/>
+      <div className="flex">
+        <div className="w-1/2 p-2">
+          <OrderForm username={username} room={room}/>
+        </div>
+        <div className="w-1/2 pr-8">
+          <OrderBook username={username} room={room}/>
+        </div>
+      </div>
+      <Test/>
     </div>
   );
 }
